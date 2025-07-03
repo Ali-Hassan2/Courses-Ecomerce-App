@@ -9,6 +9,8 @@ const courseroute = require('./Routes/CourseRoute');
 const fileUpload = require('express-fileupload');
 const userroute = require('./Routes/userRoute')
 const cloudinary = require('cloudinary').v2;
+const adminrouter = require('./Routes/adminroutes');
+const cookieParser = require('cookie-parser');
 
 dotenv.config();
 const port = process.env.PORT || 4002
@@ -28,6 +30,8 @@ app.use(fileUpload({
 // defining routes
 app.use('/cs/course',courseroute);
 app.use('/auth/',userroute)
+app.use('/admin',adminrouter)
+app.use(cookieParser());
 
 
 

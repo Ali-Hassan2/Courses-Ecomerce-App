@@ -6,7 +6,6 @@ dotenv.config();
 async function checkusertoken (req,res,next){
 
 
-console.log("Mei chl rhhhhhhhhhhhhaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer')) {
         return res.status(400).json({

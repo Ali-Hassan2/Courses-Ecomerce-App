@@ -1,0 +1,27 @@
+{
+  "name": "Course-Selling-Ecomerce-Site",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "frontend": "cd frontend && npm run dev",
+    "backend": "cd backend && npm run dev",
+    "dev": "concurrently \"npm run frontend\" \"npm run backend\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ali-Hassan2/Courses-Ecomerce-App.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ali-Hassan2/Courses-Ecomerce-App/issues"
+  },
+  "homepage": "https://github.com/Ali-Hassan2/Courses-Ecomerce-App#readme",
+  "dependencies": {
+    "@heroicons/react": "^2.2.0",
+    "concurrently": "^9.1.2"
+  }
+}

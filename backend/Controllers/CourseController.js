@@ -3,6 +3,7 @@ const cloudinary = require('cloudinary').v2;
 const purchaseschema = require('../Models/purchase')
 const mongoose = require('mongoose');
 const creatingcourse = async (req, res) => {
+  const adminid = req.adminid;
   try {
     const { title, description, price } = req.body;
     console.log("The data we got is: ", { title, description, price });
@@ -48,7 +49,8 @@ const creatingcourse = async (req, res) => {
       image:{
         public_id:uploadResult.public_id,
         url:uploadResult.url
-      }
+      },
+      creator:adminid,
     };
 
     const course = await CourseSchema.create(payload);
@@ -73,6 +75,7 @@ const creatingcourse = async (req, res) => {
 
 
 const updatingcourse = async (req, res) => {
+  const adminid = req.adminid;
   try {
     const { id } = req.params;
     console.log("The course id is:", id);
@@ -86,9 +89,22 @@ const updatingcourse = async (req, res) => {
         message: "Missing required fields or course ID.",
       });
     }
+    const courseSearch = await CourseSchema.findById({
+      _id:id,
+      creator:adminid
+    })
 
+    if(!courseSearch){
+      return res.status(400).json({
+        success:false,
+        message:"There is no such course.",
+      })
+    }
+ 
     const course = await CourseSchema.updateOne(
-      { _id: id },
+      { _id: id,
+        creator:adminid
+       },
       {
         title,
         description,
@@ -99,6 +115,7 @@ const updatingcourse = async (req, res) => {
         },
       }
     );
+
 
     res.status(200).json({
       success: true,
@@ -116,41 +133,49 @@ const updatingcourse = async (req, res) => {
 };
 
 
-
-const deletingcourse = async(req,res)=>{
-  const {id} = req.params;
+const deletingcourse = async (req, res) => {
+  const { id } = req.params;
+  const adminid = req.adminid;
   try {
-    if(!id){
-      console.log("No id to got.")
+    if (!id) {
       return res.status(400).json({
-        success:false,
-        message:"There is no id specified."
-      })
-    }
-  
-    const course = await CourseSchema.deleteOne({
-      _id:id
-    })
-    if(!course){
-      return res.status(400).json({
-        success:false,
-        message:"There is no such course to delete."
-      })
+        success: false,
+        message: "No course ID specified.",
+      });
     }
 
-    return res.status(200).send({
-      success:true,
-      message:"Course successfully deleted."
-    })
+
+
+
+    const result = await CourseSchema.deleteOne({ _id: id,
+      creator:adminid
+     });
+
+    console.log("Delete result:", result);
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Course not found or already deleted.",
+      });
+    }
+
+
+
+    return res.status(200).json({
+      success: true,
+      message: "Course successfully deleted.",
+    });
   } catch (error) {
-    console.log("There is an error while deleting the course.");
+    console.error("Error while deleting course:", error);
     return res.status(500).json({
-      success:false,
-      message:"Ther is an interval issue error.",
-      error:error
-    })
+      success: false,
+      message: "Internal server error while deleting course.",
+      error: error.message,
+    });
   }
-}
+};
+
 
 const gettingcourse = async(req,res)=>{
 
@@ -272,10 +297,6 @@ const buycourse = async (req, res) => {
     });
   }
 };
-
-
-
-
 
 
 module.exports = { creatingcourse, updatingcourse,

@@ -1,4 +1,4 @@
-const User = require('../Models/userModel');
+const User = require('../Models/User');
 const bcrypt = require('bcrypt');
 const z = require('zod');
 const jwt = require('jsonwebtoken')
@@ -20,7 +20,7 @@ const signup = async(req,res)=>{
         password:z.string().min(6,{message:"Must be atleast 6 characters be in password."})
 
     })
-
+    
     const validatedData = userSchema.safeParse(req.body);
     if(!validatedData){
         return res
@@ -137,6 +137,12 @@ const login = async (req, res) => {
 
 const logout = async(req,res)=>{
     try {
+        if(!req.cookie.jwt){
+            return res.status(400).json({
+                success:false,
+                message:"Please login first",
+            })
+        }
         res.clearCookie('jwt');
         return res.status(200).json({
             success:true,

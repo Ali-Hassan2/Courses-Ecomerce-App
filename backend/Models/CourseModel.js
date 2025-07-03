@@ -24,7 +24,12 @@ const courseSchema = new mongoose.Schema({
             required: true,
         }
        
+    },
+    creator:{
+        type:String,
+        required:true
     }
+
 },{timestamps:true});
 
 const CourseSchema = mongoose.model('CourseSchema', courseSchema);
