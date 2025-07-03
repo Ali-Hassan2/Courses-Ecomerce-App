@@ -8,7 +8,12 @@ function Admincoursemgmt() {
   const [confirmId, setConfirmId] = useState(null);
   const [confirmInput, setConfirmInput] = useState('');
   const [error, setError] = useState('');
-  const [deletingId, setDeletingId] = useState(null); 
+  const [deletingId, setDeletingId] = useState(null);
+  const [updateId, setUpdateId] = useState(null);
+  const [uname, setUname] = useState('');
+  const [udes, setUdes] = useState('');
+  const [uprice, setUprice] = useState('');
+  const [image, setImage] = useState(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -17,17 +22,13 @@ function Admincoursemgmt() {
       setLoading(true);
       try {
         const response = await fetch('http://localhost:4001/cs/course/readcourse', {
-          method: 'GET',``
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
           signal: controller.signal,
         });
 
         const data = await response.json();
-        if (!response.ok) {
-          throw new Error(data.message || 'Something went wrong');
-        }
+        if (!response.ok) throw new Error(data.message || 'Something went wrong');
 
         if (!Array.isArray(data.data) || data.data.length === 0) {
           toast('No courses found!');
@@ -66,10 +67,7 @@ function Admincoursemgmt() {
       });
 
       const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to delete course');
-      }
+      if (!response.ok) throw new Error(data.message || 'Failed to delete course');
 
       if (data.success) {
         toast.success('Course deleted!');
@@ -85,8 +83,51 @@ function Admincoursemgmt() {
     }
   };
 
-  const handleUpdate = (course) => {
-    toast('Update coming soon!');
+  const handleUpdate = async (e, id) => {
+    e.preventDefault();
+    setLoading(true);
+
+    if (!uname || !udes || !uprice || !image) {
+      toast.error("Please fill in all fields before updating.");
+      setLoading(false);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("title", uname);
+    formData.append("description", udes);
+    formData.append("price", uprice);
+    formData.append("image", image);
+
+    try {
+      const token = localStorage.getItem('admintoken');
+      const response = await fetch(`http://localhost:4001/cs/course/updatecourse/${id}`, {
+        method: 'PUT',
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Update failed");
+
+      if (data.success) {
+        toast.success("Course updated successfully");
+        setUname('');
+        setUdes('');
+        setUprice('');
+        setImage(null);
+        setUpdateId(null);
+        setCourses((prev) =>
+          prev.map((c) => (c._id === id ? { ...c, title: uname, description: udes, price: uprice, image: { url: data?.imageURL || c.image?.url } } : c))
+        );
+      }
+    } catch (error) {
+      toast.error(`Update error: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -95,7 +136,7 @@ function Admincoursemgmt() {
       <h2 className="text-2xl font-bold text-blue-800 mb-6">All Courses</h2>
 
       {loading ? (
-        <p className="text-center text-blue-600">Loading courses...</p>
+        <p className="text-center text-blue-600">Loading...</p>
       ) : courses.length === 0 ? (
         <p className="text-center text-gray-600">No courses available.</p>
       ) : (
@@ -117,11 +158,29 @@ function Admincoursemgmt() {
 
               <div className="mt-4 flex flex-col gap-2">
                 <button
-                  onClick={() => handleUpdate(crs)}
+                  onClick={() => {
+                    setUpdateId(crs._id);
+                    setUname(crs.title);
+                    setUdes(crs.description);
+                    setUprice(crs.price);
+                  }}
                   className="px-4 py-1 bg-yellow-500 text-white text-sm rounded-md hover:bg-yellow-600"
                 >
                   Update
                 </button>
+
+                {updateId === crs._id && (
+                  <form onSubmit={(e) => handleUpdate(e, crs._id)} className="border p-4 rounded bg-gray-100">
+                    <p className="mb-2 font-semibold text-gray-700">Update: {crs.title}</p>
+                    <input type="text" value={uname} onChange={(e) => setUname(e.target.value)} required placeholder="Title" className="mb-2 p-1 w-full border rounded" />
+                    <input type="text" value={udes} onChange={(e) => setUdes(e.target.value)} required placeholder="Description" className="mb-2 p-1 w-full border rounded" />
+                    <input type="number" value={uprice} onChange={(e) => setUprice(e.target.value)} required placeholder="Price" className="mb-2 p-1 w-full border rounded" />
+                    <input type="file" onChange={(e) => setImage(e.target.files[0])} className="mb-2 w-full" />
+                    <button type="submit" className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">
+                      Submit Update
+                    </button>
+                  </form>
+                )}
 
                 {confirmId === crs._id ? (
                   <div className="border border-red-300 p-3 rounded bg-red-50">
