@@ -241,8 +241,13 @@ const getcoursedetails = async(req,res)=>{
 }
 
 const buycourse = async (req, res) => {
+  console.log("==== BUY COURSE API HIT ====");
+console.log("req.params.id:", req.params.id);
+console.log("req.id (userId):", req.id);
+
   const userId = req.id; 
-  const { courseid } = req.params;
+  const  {courseid}  = req.params;
+  console.log("The course id we got is:",courseid)
 
   console.log("The user id is:", userId);
   console.log("The course id is:", courseid);

@@ -22,6 +22,7 @@
   "homepage": "https://github.com/Ali-Hassan2/Courses-Ecomerce-App#readme",
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+    "@tanstack/react-query": "^5.81.5",
     "concurrently": "^9.1.2"
   }
 }

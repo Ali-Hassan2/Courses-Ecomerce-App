@@ -29,7 +29,7 @@ app.use(fileUpload({
 
 // defining routes
 app.use('/cs/course',courseroute);
-app.use('/auth/',userroute)
+app.use('/auth',userroute)
 app.use('/admin',adminrouter)
 app.use(cookieParser());
 

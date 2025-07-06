@@ -22,12 +22,22 @@ async function checkusertoken (req,res,next){
         console.log("The id is: ",decoded.id)
         next();
     } catch (error) {
-        return res.status(500).send({
-            success:false,
-            messaage:"There is an internal server error",
-            error:error
-        })
-    }
+        console.error("JWT Verify Error:", error);
+      
+        if (error.name === 'TokenExpiredError') {
+          return res.status(401).json({
+            success: false,
+            message: 'TokenExpiredError',
+            error: error
+          });
+        }
+      
+        return res.status(500).json({
+          success: false,
+          message: "Token verification failed",
+          error: error
+        });
+      }
 
 }
 

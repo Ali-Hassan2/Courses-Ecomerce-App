@@ -16,6 +16,8 @@ import Admindashboardroute from './ProtectedRoutes/Admindashboardroute'
 import Admincoursemgmt from './Pages/Admincoursemgmt'
 import AdminPurcahescourse from './Pages/AdminPurcahescourse'
 import Adminaddcourse from './Pages/Adminaddcourse'
+import UserProfile from './Pages/UserProfile'
+import Purchased from './Pages/Purchased'
 
 function App() {
 
@@ -101,6 +103,14 @@ function App() {
     {
       path:'/admindashboard/purchasemgmt',
       element:<AdminPurcahescourse/>
+    },
+    {
+      path:'/purchases',
+      element:<Purchased/>
+    },
+    {
+      path:'/User',
+      element:<UserProfile/>
     }
   ]);
 
