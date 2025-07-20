@@ -11,6 +11,7 @@ const userroute = require('./Routes/userRoute')
 const cloudinary = require('cloudinary').v2;
 const adminrouter = require('./Routes/adminroutes');
 const cookieParser = require('cookie-parser');
+const chatroute = require('./Routes/chat')
 
 dotenv.config();
 const port = process.env.PORT || 4002
@@ -31,6 +32,7 @@ app.use(fileUpload({
 app.use('/cs/course',courseroute);
 app.use('/auth',userroute)
 app.use('/admin',adminrouter)
+app.use('/chat',chatroute)
 app.use(cookieParser());
 
 

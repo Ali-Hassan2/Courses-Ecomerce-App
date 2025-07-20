@@ -3,7 +3,8 @@ const router = express.Router();
 const { creatingcourse, updatingcourse, deletingcourse,
     gettingcourse,
     getcoursedetails, 
-    buycourse} = require('../Controllers/CourseController');
+    buycourse,
+    buycoursewithoutstripe} = require('../Controllers/CourseController');
 const checkusertoken = require('../middlewars.js/userm');
 
 const {adminmiddle} = require('../middlewars.js/adminmid');
@@ -14,6 +15,7 @@ router.put('/updatecourse/:id',adminmiddle, updatingcourse)
 router.delete('/deletecourse/:id',adminmiddle, deletingcourse);
 router.get('/readcourse', gettingcourse);
 router.get('/coursedetails/:id', getcoursedetails);
+router.post('/buywstripe/:courseid',checkusertoken,buycoursewithoutstripe);
 router.post('/buy/:courseid',checkusertoken,buycourse);
 
 

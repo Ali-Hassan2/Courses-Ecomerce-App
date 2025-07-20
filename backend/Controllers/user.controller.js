@@ -160,39 +160,41 @@ const logout = async(req,res)=>{
 
 
 
-const purchasedcourses = async (req,res)=>{
-
+const purchasedcourses = async (req, res) => {
     const id = req.id;
-
-    console.log("The user id is:",id)
-
-    if(!id){
-        return res.status(400).json({
-            success:false,
-            message:"No id is provided"
-        })
+    console.log("The user id is:", id);
+  
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "No id is provided",
+      });
     }
+  
     try {
-        const purchased = await purchaseschema.find({userid:id});
-        const courseid = purchased.map((item) => item.courseid);
-        const courses = await CourseSchema.find({
-            _id:{$in:courseid},
-        })
-        return res.status(200).send({
-            success:true,
-            message:"Courses found",
-            purchasedcourses:courses
-        })
+      const purchases = await purchaseschema
+        .find({ userid: id })
+        .populate("courseid");
+  
+      const fullCourses = purchases
+        .map((item) => item.courseid)
+        .filter(Boolean); 
+  
+      return res.status(200).send({
+        success: true,
+        message: "Courses found",
+        purchasedcourses: fullCourses,
+      });
     } catch (error) {
-        console.log("There is an error.",error);
-        return res.status(500).json({
-            success:false,
-            message:"Internal Server Error.",
-            error:error
-        })
+      console.log("There is an error.", error);
+      return res.status(500).json({
+        success: false,
+        message: "Internal Server Error.",
+        error: error.message,
+      });
     }
-  }
-
+  };
+  
 
 
 

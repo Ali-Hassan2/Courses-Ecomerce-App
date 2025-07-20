@@ -18,6 +18,7 @@ import AdminPurcahescourse from './Pages/AdminPurcahescourse'
 import Adminaddcourse from './Pages/Adminaddcourse'
 import UserProfile from './Pages/UserProfile'
 import Purchased from './Pages/Purchased'
+import Stripe from './Pages/Stripe'
 
 function App() {
 
@@ -111,6 +112,10 @@ function App() {
     {
       path:'/User',
       element:<UserProfile/>
+    },
+    {
+      path:'/stripe/:id',
+      element:<Stripe/>
     }
   ]);
 

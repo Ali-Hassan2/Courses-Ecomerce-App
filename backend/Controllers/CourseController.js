@@ -240,7 +240,9 @@ const getcoursedetails = async(req,res)=>{
 
 }
 
-const buycourse = async (req, res) => {
+// This is the function i write to buy the courses without any payment method
+
+const buycoursewithoutstripe = async (req, res) => {
   console.log("==== BUY COURSE API HIT ====");
 console.log("req.params.id:", req.params.id);
 console.log("req.id (userId):", req.id);
@@ -304,5 +306,69 @@ console.log("req.id (userId):", req.id);
 };
 
 
+
+const Stripe = require('stripe');
+const stripe = new Stripe(
+  process.env.STRIPE_SECRET
+);
+
+console.log("The secret key is:",process.env.STRIPE_SECRET)
+const buycourse = async(req,res)=>{
+  const id = req.id;
+  const {courseid} = req.params;
+
+  console.log("The user id is:",id);
+  console.log("The course id is:",courseid);
+
+  if(!mongoose.Types.ObjectId.isValid(courseid)){
+    return res.status(400).json({
+      success:false,
+      message:"Invalid course id."
+    })
+  }
+
+  const course = await CourseSchema.findById(courseid);
+  if(!course){
+    return res.status(404).json({
+      success:false,
+      message:"No course found."
+    })
+  }
+
+  const existingcourse = await CourseSchema.findOne({
+    courseid,
+    userid:id
+  })
+  if(existingcourse){
+    return res.status(404).json({
+      success:false,
+      message:"The Course already purchased"
+    })
+  }
+
+  // Strip payment method
+
+  const amount = course.price;
+  const paymentIntent = await stripe.paymentIntents.create({
+    amount:amount,
+    currency:"usd",
+    payment_method_types:['card']
+  })
+    const newPurchase = new purchaseschema({
+      courseid,
+      userid: id,
+    });
+    await newPurchase.save();
+  res.status(201).send({
+    // in response send this
+    success:true,
+    message:"Course Purchased successfully.",
+    course,
+    clientSecret: paymentIntent.client_secret,
+  })
+
+}
+
+
 module.exports = { creatingcourse, updatingcourse,
-   deletingcourse, gettingcourse, getcoursedetails, buycourse };
+   deletingcourse, gettingcourse, getcoursedetails, buycourse,buycoursewithoutstripe };
