@@ -1,62 +1,65 @@
-import { useState } from 'react'
-import toast, { Toaster } from 'react-hot-toast'
+import { useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 
 function Adminaddcourse() {
-  const [title, settitle] = useState('')
-  const [description, setdescription] = useState('')
-  const [price, setprice] = useState('')
-  const [image, setimage] = useState(null)
-  const [loading, setloading] = useState(false)
+  const [title, settitle] = useState("");
+  const [description, setdescription] = useState("");
+  const [price, setprice] = useState("");
+  const [image, setimage] = useState(null);
+  const [loading, setloading] = useState(false);
 
   const handleuploading = async (e) => {
-    e.preventDefault()
-    setloading(true)
+    e.preventDefault();
+    setloading(true);
 
     if (!title || !description || !price || !image) {
-      toast.error('All fields are required!')
-      setloading(false)
-      return
+      toast.error("All fields are required!");
+      setloading(false);
+      return;
     }
 
-    const formData = new FormData()
-    formData.append('title', title)
-    formData.append('description', description)
-    formData.append('price', price)
-    formData.append('image', image)
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("description", description);
+    formData.append("price", price);
+    formData.append("image", image);
 
     try {
-      const token = localStorage.getItem('admintoken')
-      const controller = new AbortController()
-      const signal = controller.signal
+      const token = localStorage.getItem("admintoken");
+      const controller = new AbortController();
+      const signal = controller.signal;
 
-      const response = await fetch(`http://localhost:4001/cs/course/createcourse`, {
-        method: 'POST',
-        body: formData,
-        signal: signal,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      const response = await fetch(
+        `http://localhost:4001/cs/course/createcourse`,
+        {
+          method: "POST",
+          body: formData,
+          signal: signal,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Something went wrong')
+        throw new Error(data.message || "Something went wrong");
       }
 
-      toast.success('Course created successfully! ')
-      settitle('')
-      setdescription('')
-      setprice('')
-      setimage(null)
+      toast.success("Course created successfully! ");
+      settitle("");
+      setdescription("");
+      setprice("");
+      setimage(null);
     } catch (error) {
-      if (error.name !== 'AbortError') {
-        toast.error(error.message || 'Something went wrong')
+      if (error.name !== "AbortError") {
+        toast.error(error.message || "Something went wrong");
       }
     } finally {
-      setloading(false)
+      setloading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gray-900 flex justify-center items-center px-4">
@@ -65,7 +68,9 @@ function Adminaddcourse() {
         onSubmit={handleuploading}
         className="bg-gray-800 p-8 rounded-2xl shadow-lg w-full max-w-md space-y-5"
       >
-        <h2 className="text-2xl text-white font-bold text-center">Add New Course</h2>
+        <h2 className="text-2xl text-white font-bold text-center">
+          Add New Course
+        </h2>
 
         <input
           type="text"
@@ -101,14 +106,16 @@ function Adminaddcourse() {
           type="submit"
           disabled={loading}
           className={`w-full py-2 rounded font-semibold ${
-            loading ? 'bg-gray-600 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+            loading
+              ? "bg-gray-600 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700"
           } text-white transition-all`}
         >
-          {loading ? 'Uploading...' : 'Add Course'}
+          {loading ? "Uploading..." : "Add Course"}
         </button>
       </form>
     </div>
-  )
+  );
 }
 
-export default Adminaddcourse
+export default Adminaddcourse;

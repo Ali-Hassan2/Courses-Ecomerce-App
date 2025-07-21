@@ -1,13 +1,16 @@
-import React, { useContext } from 'react';
-import Navbar from '../Components/Navbar';
-import { CartContext } from '../../Utils/cartContext';
-import { Link } from 'react-router-dom';
-import { UserContext } from '../../Utils/userContext';
+import React, { useContext } from "react";
+import Navbar from "../Components/Navbar";
+import { CartContext } from "../../Utils/cartContext";
+import { Link } from "react-router-dom";
+import { UserContext } from "../../Utils/userContext";
 
 const Cart = () => {
   const { user } = useContext(UserContext);
   const { cartitems, removecart, clearCart } = useContext(CartContext);
-  const totalPrice = cartitems.reduce((sum, item) => sum + Number(item.price), 0);
+  const totalPrice = cartitems.reduce(
+    (sum, item) => sum + Number(item.price),
+    0
+  );
 
   if (!user) {
     return (
@@ -36,7 +39,7 @@ const Cart = () => {
         <h2 className="text-3xl font-bold mb-6">Your Cart</h2>
         {cartitems.length === 0 ? (
           <p>
-            Your cart is empty.{' '}
+            Your cart is empty.{" "}
             <Link to="/Courses" className="text-blue-400 underline">
               Browse courses
             </Link>
@@ -52,7 +55,9 @@ const Cart = () => {
                   <div>
                     <h3 className="text-xl font-semibold">{course.title}</h3>
                     <p className="text-gray-400">{course.description}</p>
-                    <p className="text-blue-400 font-semibold">Rs. {course.price}</p>
+                    <p className="text-blue-400 font-semibold">
+                      Rs. {course.price}
+                    </p>
                   </div>
                   <button
                     className="text-red-500 hover:text-red-700"
@@ -68,7 +73,9 @@ const Cart = () => {
             </div>
             <button
               className="mt-4 bg-indigo-600 hover:bg-indigo-700 px-6 py-2 rounded-md text-white font-semibold"
-              onClick={() => alert('Proceeding to payment (implement your payment logic)')}
+              onClick={() =>
+                alert("Proceeding to payment (implement your payment logic)")
+              }
             >
               Continue to Payment
             </button>

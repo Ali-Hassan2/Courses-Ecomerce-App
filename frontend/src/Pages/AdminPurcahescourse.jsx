@@ -1,11 +1,7 @@
-import React from 'react'
+import React from "react";
 
 function AdminPurcahescourse() {
-  return (
-    <div>
-      admin purchase courses
-    </div>
-  )
+  return <div>admin purchase courses</div>;
 }
 
-export default AdminPurcahescourse
+export default AdminPurcahescourse;

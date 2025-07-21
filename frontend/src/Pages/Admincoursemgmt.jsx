@@ -1,18 +1,18 @@
-import { useState, useEffect } from 'react';
-import toast, { Toaster } from 'react-hot-toast';
-import { motion } from 'framer-motion';
+import { useState, useEffect } from "react";
+import toast, { Toaster } from "react-hot-toast";
+import { motion } from "framer-motion";
 
 function Admincoursemgmt() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(false);
   const [confirmId, setConfirmId] = useState(null);
-  const [confirmInput, setConfirmInput] = useState('');
-  const [error, setError] = useState('');
+  const [confirmInput, setConfirmInput] = useState("");
+  const [error, setError] = useState("");
   const [deletingId, setDeletingId] = useState(null);
   const [updateId, setUpdateId] = useState(null);
-  const [uname, setUname] = useState('');
-  const [udes, setUdes] = useState('');
-  const [uprice, setUprice] = useState('');
+  const [uname, setUname] = useState("");
+  const [udes, setUdes] = useState("");
+  const [uprice, setUprice] = useState("");
   const [image, setImage] = useState(null);
 
   useEffect(() => {
@@ -21,24 +21,28 @@ function Admincoursemgmt() {
     const getCourses = async () => {
       setLoading(true);
       try {
-        const response = await fetch('http://localhost:4001/cs/course/readcourse', {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' },
-          signal: controller.signal,
-        });
+        const response = await fetch(
+          "http://localhost:4001/cs/course/readcourse",
+          {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+            signal: controller.signal,
+          }
+        );
 
         const data = await response.json();
-        if (!response.ok) throw new Error(data.message || 'Something went wrong');
+        if (!response.ok)
+          throw new Error(data.message || "Something went wrong");
 
         if (!Array.isArray(data.data) || data.data.length === 0) {
-          toast('No courses found!');
+          toast("No courses found!");
           setCourses([]);
         } else {
           setCourses(data.data);
-          toast.success('Courses loaded successfully');
+          toast.success("Courses loaded successfully");
         }
       } catch (error) {
-        if (error.name !== 'AbortError') {
+        if (error.name !== "AbortError") {
           toast.error(`Failed to fetch courses: ${error.message}`);
         }
       } finally {
@@ -52,29 +56,33 @@ function Admincoursemgmt() {
 
   const handleDelete = async (id, title) => {
     if (confirmInput !== title) {
-      setError('Course title not matched');
+      setError("Course title not matched");
       return;
     }
 
     setDeletingId(id);
     try {
-      const token = localStorage.getItem('admintoken');
-      const response = await fetch(`http://localhost:4001/cs/course/deletecourse/${id}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const token = localStorage.getItem("admintoken");
+      const response = await fetch(
+        `http://localhost:4001/cs/course/deletecourse/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message || 'Failed to delete course');
+      if (!response.ok)
+        throw new Error(data.message || "Failed to delete course");
 
       if (data.success) {
-        toast.success('Course deleted!');
+        toast.success("Course deleted!");
         setCourses((prev) => prev.filter((c) => c._id !== id));
         setConfirmId(null);
-        setConfirmInput('');
-        setError('');
+        setConfirmInput("");
+        setError("");
       }
     } catch (error) {
       toast.error(`Error: ${error.message}`);
@@ -100,27 +108,40 @@ function Admincoursemgmt() {
     formData.append("image", image);
 
     try {
-      const token = localStorage.getItem('admintoken');
-      const response = await fetch(`http://localhost:4001/cs/course/updatecourse/${id}`, {
-        method: 'PUT',
-        body: formData,
-        headers: {
-          Authorization: `Bearer ${token}`
+      const token = localStorage.getItem("admintoken");
+      const response = await fetch(
+        `http://localhost:4001/cs/course/updatecourse/${id}`,
+        {
+          method: "PUT",
+          body: formData,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      });
+      );
 
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Update failed");
 
       if (data.success) {
         toast.success("Course updated successfully");
-        setUname('');
-        setUdes('');
-        setUprice('');
+        setUname("");
+        setUdes("");
+        setUprice("");
         setImage(null);
         setUpdateId(null);
         setCourses((prev) =>
-          prev.map((c) => (c._id === id ? { ...c, title: uname, description: udes, price: uprice, image: { url: data?.imageURL || c.image?.url } } : c))
+          prev.map((c) =>
+            c._id === id
+              ? {
+                  ...c,
+                  title: uname,
+                  description: udes,
+                  price: uprice,
+                  image: { url: data?.imageURL || c.image?.url },
+                }
+              : c
+          )
         );
       }
     } catch (error) {
@@ -148,11 +169,13 @@ function Admincoursemgmt() {
               whileHover={{ scale: 1.03 }}
             >
               <img
-                src={crs.image?.url || 'https://via.placeholder.com/300'}
+                src={crs.image?.url || "https://via.placeholder.com/300"}
                 alt={crs.title}
                 className="w-full h-40 object-cover rounded-md mb-3"
               />
-              <h3 className="text-lg font-semibold text-gray-800">Title: {crs.title}</h3>
+              <h3 className="text-lg font-semibold text-gray-800">
+                Title: {crs.title}
+              </h3>
               <p className="text-sm text-gray-600">Price: Rs {crs.price}</p>
               <p className="text-sm mt-2 text-gray-500">{crs.description}</p>
 
@@ -170,13 +193,46 @@ function Admincoursemgmt() {
                 </button>
 
                 {updateId === crs._id && (
-                  <form onSubmit={(e) => handleUpdate(e, crs._id)} className="border p-4 rounded bg-gray-100">
-                    <p className="mb-2 font-semibold text-gray-700">Update: {crs.title}</p>
-                    <input type="text" value={uname} onChange={(e) => setUname(e.target.value)} required placeholder="Title" className="mb-2 p-1 w-full border rounded" />
-                    <input type="text" value={udes} onChange={(e) => setUdes(e.target.value)} required placeholder="Description" className="mb-2 p-1 w-full border rounded" />
-                    <input type="number" value={uprice} onChange={(e) => setUprice(e.target.value)} required placeholder="Price" className="mb-2 p-1 w-full border rounded" />
-                    <input type="file" onChange={(e) => setImage(e.target.files[0])} className="mb-2 w-full" />
-                    <button type="submit" className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">
+                  <form
+                    onSubmit={(e) => handleUpdate(e, crs._id)}
+                    className="border p-4 rounded bg-gray-100"
+                  >
+                    <p className="mb-2 font-semibold text-gray-700">
+                      Update: {crs.title}
+                    </p>
+                    <input
+                      type="text"
+                      value={uname}
+                      onChange={(e) => setUname(e.target.value)}
+                      required
+                      placeholder="Title"
+                      className="mb-2 p-1 w-full border rounded"
+                    />
+                    <input
+                      type="text"
+                      value={udes}
+                      onChange={(e) => setUdes(e.target.value)}
+                      required
+                      placeholder="Description"
+                      className="mb-2 p-1 w-full border rounded"
+                    />
+                    <input
+                      type="number"
+                      value={uprice}
+                      onChange={(e) => setUprice(e.target.value)}
+                      required
+                      placeholder="Price"
+                      className="mb-2 p-1 w-full border rounded"
+                    />
+                    <input
+                      type="file"
+                      onChange={(e) => setImage(e.target.files[0])}
+                      className="mb-2 w-full"
+                    />
+                    <button
+                      type="submit"
+                      className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                    >
                       Submit Update
                     </button>
                   </form>
@@ -193,19 +249,23 @@ function Admincoursemgmt() {
                       value={confirmInput}
                       onChange={(e) => setConfirmInput(e.target.value)}
                     />
-                    {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+                    {error && (
+                      <p className="text-red-500 text-sm mt-1">{error}</p>
+                    )}
                     <div className="flex gap-2 mt-2">
                       <button
                         onClick={() => handleDelete(crs._id, crs.title)}
                         className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-sm"
                       >
-                        {deletingId === crs._id ? 'Deleting...' : 'Confirm Delete'}
+                        {deletingId === crs._id
+                          ? "Deleting..."
+                          : "Confirm Delete"}
                       </button>
                       <button
                         onClick={() => {
                           setConfirmId(null);
-                          setConfirmInput('');
-                          setError('');
+                          setConfirmInput("");
+                          setError("");
                         }}
                         className="bg-gray-300 text-sm px-3 py-1 rounded hover:bg-gray-400"
                       >
@@ -217,8 +277,8 @@ function Admincoursemgmt() {
                   <button
                     onClick={() => {
                       setConfirmId(crs._id);
-                      setConfirmInput('');
-                      setError('');
+                      setConfirmInput("");
+                      setError("");
                     }}
                     className="px-4 py-1 bg-red-500 text-white text-sm rounded-md hover:bg-red-600"
                   >

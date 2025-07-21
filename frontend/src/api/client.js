@@ -1,1 +1,1 @@
-BASE_URL = `http://localhost:4001/auth`
+const BASE_URL = `http://localhost:4001/auth`
