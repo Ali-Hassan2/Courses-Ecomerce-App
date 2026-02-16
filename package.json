@@ -23,6 +23,6 @@
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "@tanstack/react-query": "^5.81.5",
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.2.2"
   }
 }
